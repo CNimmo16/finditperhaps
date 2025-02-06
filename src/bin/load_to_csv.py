@@ -7,8 +7,6 @@ from util import constants
 import models
 import models.doc_embedder, models.query_embedder
 
-dirname = os.path.dirname(__file__)
-
 def _expand_passages(row) -> hf_datasets.Dataset:
     queries = []
     doc_refs = []

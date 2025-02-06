@@ -113,9 +113,9 @@ def main():
             best_doc_state_dict = doc_projector.state_dict()
             val_loss_failed_to_improve_for_epochs = 0
 
-            Path(os.path.join(dirname, "../data/epoch-weights")).mkdir(exist_ok=True)
-            torch.save(best_query_state_dict, os.path.join(dirname, f"../data/epoch-weights/query-projector-weights_epoch-{epoch+1}.generated.pt"))
-            torch.save(best_doc_state_dict, os.path.join(dirname, f"../data/epoch-weights/doc-projector-weights_epoch-{epoch+1}.generated.pt"))
+            Path(os.path.join(constants.DATA_PATH, "epoch-weights")).mkdir(exist_ok=True)
+            torch.save(best_query_state_dict, os.path.join(constants.DATA_PATH, "epoch-weights/query-projector-weights_epoch-{epoch+1}.generated.pt"))
+            torch.save(best_doc_state_dict, os.path.join(constants.DATA_PATH, "epoch-weights/doc-projector-weights_epoch-{epoch+1}.generated.pt"))
         else:
             val_loss_failed_to_improve_for_epochs += 1
 
@@ -123,11 +123,11 @@ def main():
             print(f"Validation loss failed to improve for {EARLY_STOP_AFTER} epochs. Early stopping now.")
             break
 
-    query_model_save_path = os.path.join(dirname, '../data/query-projector-weights.generated.pt')
+    query_model_save_path = os.path.join(constants.DATA_PATH, 'query-projector-weights.generated.pt')
     torch.save(best_query_state_dict, query_model_save_path)
     artifacts.store_artifact('query-projector-weights', 'model', query_model_save_path)
 
-    doc_model_save_path = os.path.join(dirname, '../data/doc-projector-weights.generated.pt')
+    doc_model_save_path = os.path.join(constants.DATA_PATH, 'doc-projector-weights.generated.pt')
     torch.save(best_doc_state_dict, doc_model_save_path)
     artifacts.store_artifact('doc-projector-weights', 'model', doc_model_save_path)
 

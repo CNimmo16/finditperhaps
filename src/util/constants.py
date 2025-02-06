@@ -3,6 +3,7 @@ from util import mini
 
 dirname = os.path.dirname(__file__)
 
-DOCS_PATH = os.path.join(dirname, f"../../data/docs.generated.csv")
-TRAINING_DATA_PATH = os.path.join(dirname, f"../../data/training-data.generated.csv")
-SAMPLE_QUERIES_PATH = os.path.join(dirname, f"../../data/sample-queries.generated.csv")
+DATA_PATH = os.path.join(dirname, "../../data")
+DOCS_PATH = os.path.join(DATA_PATH, "docs.generated.csv")
+TRAINING_DATA_PATH = os.path.join(DATA_PATH, "training-data.generated.csv")
+SAMPLE_QUERIES_PATH = os.path.join(DATA_PATH, "sample-queries.generated.csv")

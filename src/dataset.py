@@ -8,9 +8,7 @@ import os
 
 import models
 import models.query_embedder, models.doc_embedder
-from util import devices, mini
-
-dirname = os.path.dirname(__file__)
+from util import devices, mini, constants
 
 CHUNK_SIZE = 10000
 
@@ -40,8 +38,8 @@ class TwoTowerDataset(torch.utils.data.Dataset):
     
     def __get_chunk(self, chunk_idx: int):
         if chunk_idx not in self.prepped:
-            Path(os.path.join(dirname, './data/chunks')).mkdir(parents=True, exist_ok=True)
-            chunk_filepath = os.path.join(dirname, f"./data/chunks/chunk-{chunk_idx}.generated.pt")
+            Path(os.path.join(constants.DATA_PATH, 'chunks')).mkdir(parents=True, exist_ok=True)
+            chunk_filepath = os.path.join(constants.DATA_PATH, f"chunks/chunk-{chunk_idx}.generated.pt")
             try:
                 if mini.is_mini():
                     raise FileNotFoundError('CACHE MISS: Mini mode, not loading')
