@@ -31,6 +31,10 @@ apt-get install python3.9
 2. Run `pdm run cache` to run a script that stores the encoded vectors for each document in chroma
 3. Run `pdm run serve` to launch the web server. It should open on http://localhost:8080
 
+### Overriding the weights used
+
+By default inference is run using model weights downloaded from wandb (see `src/util/artifacts.py`). Override these by setting env variables, for example to override the weights for the projector during caching you could run `DOC_PROJECTOR_WEIGHTS_PATH=data/doc-weights_epoch-30.generated.pt pdm run cache`
+
 ## Deployment
 
 1. Run `pdm run build` to build the server docker image and push it to docker hub

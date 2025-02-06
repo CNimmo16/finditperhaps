@@ -9,6 +9,11 @@ dirname = os.path.dirname(__file__)
 api = wandb.Api()
 
 def download_from_wandb(ref: str, file: str):
+    env_override = os.environ.get(f"{ref.upper().replace('-', '_')}_PATH", None)
+    if env_override:
+        print(f"INFO: Using override for {ref}: {env_override}")
+        return env_override
+
     artifact = api.artifact(f"cnimmo16/search/{ref}:latest")
     dir = artifact.download(os.path.join(dirname, '../artifacts'))
     return os.path.join(dir, file)

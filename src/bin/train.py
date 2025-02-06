@@ -69,7 +69,7 @@ def main():
     models.vectors.get_vecs()
 
     def get_epoch_weight_path(epoch, query_or_doc):
-        return os.path.join(constants.DATA_PATH, f"epoch-weights/query-{query_or_doc}-weights_epoch-{epoch + 1}.generated.pt")
+        return os.path.join(constants.DATA_PATH, f"epoch-weights/{query_or_doc}-weights_epoch-{epoch + 1}.generated.pt")
 
     for epoch in range(EPOCHS):
         query_projector.train()

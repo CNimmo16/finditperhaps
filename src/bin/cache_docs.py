@@ -32,6 +32,12 @@ def main():
     doc_projector.load_state_dict(doc_state_dict)
     doc_projector.eval()
 
+    print('Deleting existing cache...')
+
+    collection = chroma.client.get_or_create_collection(name="docs")
+
+    chroma.client.delete_collection(name="docs")
+
     print('Encoding documents...')
 
     def get_doc_encoding(row):
@@ -52,19 +58,21 @@ def main():
             'doc_embedding': encoded_item
         })
 
-    data = data.swifter.apply(get_doc_encoding, axis=1)
-
-    print('Deleting existing cache...')
-
-    collection = chroma.client.get_or_create_collection(name="docs")
-
-    chroma.client.delete_collection(name="docs")
-
     collection = chroma.client.create_collection(name="docs", metadata={"hnsw:space": "cosine"})
 
-    print('Caching encodings...')
+    BATCH_SIZE = 1000
+    num_of_batches = len(data) // BATCH_SIZE
+    batches = np.array_split(data, num_of_batches)
+    for index, batch in enumerate(batches):
+        print(f"Encoding batch {index} of {len(batches)}")
 
-    collection.add(
-        ids=data['doc_ref'].tolist(),
-        embeddings=data['doc_embedding'].tolist()
-    )
+        batch = batch.swifter.apply(get_doc_encoding, axis=1)
+
+        print('Storing encodings for batch...')
+
+        collection.add(
+            ids=batch['doc_ref'].tolist(),
+            embeddings=batch['doc_embedding'].tolist()
+        )
+
+        print('> Done')

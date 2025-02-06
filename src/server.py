@@ -26,7 +26,8 @@ vectors.get_vecs()
 print('Checking if docs have been cached...')
 try:
     docs = chroma.client.get_collection(name="docs")
-    print('Docs already cached.')
+    count = docs.count()
+    print(f"Docs collection already exists, skipping caching. (doc count: {count})")
 except Exception:
     print('Docs not cached. Storing vectors now.')
     cache_docs()
