@@ -3,7 +3,8 @@
 open_remote () {
     read -p "Enter an ip to connect to: " ip
     read -p "Enter a port: " port
-    read -p "Enter a repo to clone: " repo_ref
+    
+    repo_ref="cnimmo16/finditperhaps"
 
     repo_url="https://github.com/$repo_ref"
 
