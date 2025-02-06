@@ -68,12 +68,7 @@
   tasks:
     - name: Fetch compose file from repo
       shell: |
-        cd ~/mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/mlx/main/search/docker-compose.yml > docker-compose.yml
-    
-    - name: Pull Docker image
-      community.docker.docker_image:
-        name: cameronnimmo/ml-search
-        source: pull
+        cd ~/mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/mlx/main/search/docker-compose.prod.yml > docker-compose.yml
 
 - name: Run docker
   hosts: cpus

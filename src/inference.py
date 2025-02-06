@@ -35,7 +35,7 @@ def get_random_query():
     return query
 
 def search(query: str):
-    query_projector, docs = docs()
+    query_projector, docs = load_model_and_docs()
 
     query_embeddings = models.query_embedder.get_embeddings_for_query(query)
 
