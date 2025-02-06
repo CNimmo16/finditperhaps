@@ -52,7 +52,8 @@ class TwoTowerDataset(torch.utils.data.Dataset):
                 rows = self.data[chunk_idx * CHUNK_SIZE:(chunk_idx + 1) * CHUNK_SIZE]
                 chunk = rows.swifter.apply(self.__prepare_row, axis=1)
                 self.prepped[chunk_idx] = chunk
-                joblib.dump(chunk, chunk_filepath)
+                if not mini.is_mini():
+                    joblib.dump(chunk, chunk_filepath)
                 print('> Done')
         return self.prepped[chunk_idx]
 

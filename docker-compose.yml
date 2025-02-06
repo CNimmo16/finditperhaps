@@ -9,4 +9,4 @@ services:
     container_name: server
     image: cameronnimmo/ml-search
     ports:
-      - "8001:8001"
+      - "8080:8080"

@@ -41,7 +41,7 @@ def main():
 
     device = devices.get_device()
 
-    print(f"Using device: {device.type}")
+    print(f"INFO: Using device: {device.type}")
 
     data = pd.read_csv(constants.TRAINING_DATA_PATH, nrows=1000 if mini.is_mini() else None)
 
