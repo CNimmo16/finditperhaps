@@ -1,0 +1,12 @@
+services:
+  chroma:
+    container_name: chroma
+    image: chromadb/chroma
+    ports:
+      - "8000:8000"
+
+  server:
+    container_name: server
+    image: cameronnimmo/ml-search
+    ports:
+      - "8001:8001"

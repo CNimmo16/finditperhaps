@@ -1,0 +1,40 @@
+<!DOCTYPE html>    
+</html>
+<html>
+<head>
+    <title>Item Details</title>
+    <link href="{{ url_for('static', path='/reset.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <main>
+        <div class="content">
+            <a href="/" class="logo">
+                FindItPerhaps
+            </a>
+
+            <form method="POST" action="/search" class="search">
+                <input type="search" name="query" placeholder="Search the (tiny fraction of) the web" value="{{ query }}">
+                <button type="submit">Go</button>
+                <a style="align-self: center;" href="/lucky">I'm feeling lucky</a>
+            </form>
+
+            {% if error %}
+                <p>{{ error }}</p>
+            {% endif %}
+
+            {% if results %}
+                <h3 style="margin-bottom: 20px;">Top results</h3>
+                <ul>
+                    {% for result in results %}
+                        <li style="margin-bottom: 14px" class="result">
+                            <a style="display: block; font-weight: 600; margin-bottom: 8px;" href="{{ result['doc_ref'] }}">{{ result['doc_ref'] }}</a>
+                            <p>{{ result['summary'] }}...</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>

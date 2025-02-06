@@ -1,0 +1,96 @@
+* {
+    font-family: 'Times New Roman', Times, serif;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background: bisque;
+    width: 100%;
+    height: 100%;
+}
+
+h1 {
+    font-size: 36px;
+}
+
+h2 {
+    font-size: 28px;
+}
+
+h3 {
+    font-size: 24px;
+    font-weight: medium;
+}
+
+input {
+    padding: 4px 8px;
+    border: 1px solid darkgreen;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+a {
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: darkviolet;
+}
+
+main {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+main > .content {
+    width: 700px;
+    max-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.logo {
+    font-size: 60px;
+    color: darkgreen !important;
+    font-weight: bold;
+    text-decoration: none;
+    align-self: center;
+}
+
+.search {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    width: 100%;
+    margin: 60px 0;
+}
+
+.search input {
+    padding: 8px 12px;
+    border: 1px solid darkgreen;
+    border-radius: 0;
+    font-size: 16px;
+    flex-grow: 1;
+}
+
+.search button {
+    min-width: 80px;
+    font-size: 16px;
+}
+
+.result {
+    border: 2px dashed darkgreen;
+    padding: 10px;
+}
