@@ -5,3 +5,5 @@ DIR="$(dirname "$(realpath "$0")")"
 pdm export --no-hashes --format=requirements --output "$DIR/requirements.txt"
 
 docker build --platform="linux/amd64" -t "cameronnimmo/ml-search" $DIR
+
+docker push cameronnimmo/ml-search

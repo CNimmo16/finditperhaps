@@ -37,3 +37,6 @@ package-dir = "src"
 load = {call = "bin.load_to_csv:main"}
 train = {call = "bin.train:main"}
 cli = {call = "bin.cli:main"}
+ansible = "./ansible.sh"
+ssh = "./ssh.sh"
+build = "./build.sh"

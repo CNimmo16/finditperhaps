@@ -34,6 +34,11 @@ def main():
         "epochs": EPOCHS
     }
 
+    if (mini.is_mini()):
+        print("INFO: Running in mini mode")
+    else:
+        print("INFO: Running in full mode")
+
     device = devices.get_device()
 
     print(f"Using device: {device.type}")
