@@ -10,7 +10,7 @@ import dataset
 
 device = devices.get_device()
 
-def cache_doc_encodings():
+def main():
     torch.no_grad()
 
     models.vectors.get_vecs()
@@ -68,5 +68,3 @@ def cache_doc_encodings():
         ids=data['doc_ref'].tolist(),
         embeddings=data['doc_embedding'].tolist()
     )
-
-cache_doc_encodings()

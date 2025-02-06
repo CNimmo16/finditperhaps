@@ -45,8 +45,6 @@ def main():
 
     data = pd.read_csv(constants.TRAINING_DATA_PATH, nrows=1000 if mini.is_mini() else None)
 
-    data = data[data['is_selected'] == 1]
-
     train, val = sklearn.model_selection.train_test_split(data, test_size=0.2, random_state=16)
 
     train.reset_index(drop=True, inplace=True)
@@ -119,8 +117,8 @@ def main():
             val_loss_failed_to_improve_for_epochs = 0
 
             Path(os.path.join(constants.DATA_PATH, "epoch-weights")).mkdir(exist_ok=True)
-            torch.save(best_query_state_dict, os.path.join(constants.DATA_PATH, "epoch-weights/query-projector-weights_epoch-{epoch+1}.generated.pt"))
-            torch.save(best_doc_state_dict, os.path.join(constants.DATA_PATH, "epoch-weights/doc-projector-weights_epoch-{epoch+1}.generated.pt"))
+            torch.save(best_query_state_dict, os.path.join(constants.DATA_PATH, f"epoch-weights/query-projector-weights_epoch-{epoch+1}.generated.pt"))
+            torch.save(best_doc_state_dict, os.path.join(constants.DATA_PATH, f"epoch-weights/doc-projector-weights_epoch-{epoch+1}.generated.pt"))
         else:
             val_loss_failed_to_improve_for_epochs += 1
 

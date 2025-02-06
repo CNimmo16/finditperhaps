@@ -41,6 +41,8 @@ def main():
 
     marco = pd.concat(marco.swifter.apply(_expand_passages, axis=1).tolist(), ignore_index=True)
 
+    marco = marco[marco['is_selected'] == 1]
+
     print('Writing docs to file...')
 
     docs = marco[['doc_ref', 'doc_text']]

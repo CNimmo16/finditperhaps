@@ -5,8 +5,10 @@ from fastapi.templating import Jinja2Templates
 from typing import Annotated
 import logging
 
+from bin.cache_docs import main as cache_docs
 import inference
 from models import vectors
+from util import chroma
 
 import os
 dirname = os.path.dirname(__file__)
@@ -20,6 +22,15 @@ static_dir = os.path.join(dirname, "web/static")
 app.mount(static_dir, StaticFiles(directory=static_dir), name="static")
 
 vectors.get_vecs()
+
+print('Checking if docs have been cached...')
+try:
+    docs = chroma.client.get_collection(name="docs")
+    print('Docs already cached.')
+except Exception:
+    print('Docs not cached. Storing vectors now.')
+    cache_docs()
+    print('> Done')
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):

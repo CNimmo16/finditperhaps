@@ -8,5 +8,9 @@ services:
   server:
     container_name: server
     image: cameronnimmo/ml-search
+    env_file: .env
+    environment:
+      CHROMA_HOST: chroma
+      CHROMA_PORT: 8000
     ports:
       - "8080:8080"

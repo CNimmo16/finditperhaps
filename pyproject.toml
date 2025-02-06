@@ -38,6 +38,7 @@ load = {call = "bin.load_to_csv:main"}
 train = {call = "bin.train:main"}
 cli = {call = "bin.cli:main"}
 serve = {call = "bin.serve:main"}
-ansible = "./ansible.sh"
+cache = {call = "bin.cache_docs:main"}
+deploy = "./deploy.sh"
 ssh = "./ssh.sh"
 build = "./build.sh"
