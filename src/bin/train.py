@@ -116,9 +116,10 @@ def main():
             best_doc_state_dict = doc_projector.state_dict()
             val_loss_failed_to_improve_for_epochs = 0
 
-            Path(os.path.join(constants.DATA_PATH, "epoch-weights")).mkdir(exist_ok=True)
-            torch.save(best_query_state_dict, os.path.join(constants.DATA_PATH, f"epoch-weights/query-projector-weights_epoch-{epoch+1}.generated.pt"))
-            torch.save(best_doc_state_dict, os.path.join(constants.DATA_PATH, f"epoch-weights/doc-projector-weights_epoch-{epoch+1}.generated.pt"))
+            if not mini.is_mini():
+                Path(os.path.join(constants.DATA_PATH, "epoch-weights")).mkdir(exist_ok=True)
+                torch.save(best_query_state_dict, os.path.join(constants.DATA_PATH, f"epoch-weights/query-projector-weights_epoch-{epoch+1}.generated.pt"))
+                torch.save(best_doc_state_dict, os.path.join(constants.DATA_PATH, f"epoch-weights/doc-projector-weights_epoch-{epoch+1}.generated.pt"))
         else:
             val_loss_failed_to_improve_for_epochs += 1
 
