@@ -13,10 +13,10 @@ import dataset
 from util import devices, artifacts, constants
 
 EPOCHS = 100
-LEARNING_RATE = 0.0002
-MARGIN = 0.2
+LEARNING_RATE = 0.001
+MARGIN = 0.15
 BATCH_SIZE = 64
-EARLY_STOP_AFTER = 3
+EARLY_STOP_AFTER = 7
 
 torch.manual_seed(16)
 

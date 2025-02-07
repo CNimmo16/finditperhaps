@@ -6,7 +6,7 @@ from util import mini
 
 word_vectors = None
 
-EMBEDDING_DIM = 50
+EMBEDDING_DIM = 300
 
 def get_random_vec():
     return np.float32(np.random.random(size=EMBEDDING_DIM))
@@ -24,7 +24,7 @@ def get_vecs():
 
     if not word_vectors:
         print("Downloading word vectors...")
-        word_vectors = gensim.downloader.load('glove-twitter-50')
+        word_vectors = gensim.downloader.load('word2vec-google-news-300')
         word_vectors["<UNK>"] = get_random_vec()
         print("Done")
     return word_vectors
