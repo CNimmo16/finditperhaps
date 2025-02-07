@@ -1,15 +1,3 @@
-# - name: Create project folder and virtual env
-#   hosts: cpus
-#   tasks:
-#     - name: Create project folder
-#       file:
-#         path: ~/mlx
-#         state: directory
-
-#     - name: Create venv
-#       shell: |
-#         python3 -m venv ~/mlx/.venv
-
 - name: Install docker
   hosts: cpus
   become: yes
@@ -47,28 +35,13 @@
           - docker-compose-plugin
         state: present
 
-    # - name: Install venv
-    #   apt:
-    #     name:
-    #       - python3.12-venv
-    #     state: present
-
-    # - name: Create venv
-    #   shell: |
-    #     python3 -m venv ~/mlx/.venv
-
-    # - name: Install docker-compose
-    #   ansible.builtin.pip:
-    #     name: docker-compose
-    #     virtualenv: ~/mlx/.venv
-
 - name: Pull files
   hosts: cpus
   become: true
   tasks:
     - name: Fetch compose file from repo
       shell: |
-        cd ~/mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/finditperhaps/main/docker-compose.prod.yml > docker-compose.yml
+        cd ~ && mkdir mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/finditperhaps/main/docker-compose.prod.yml > docker-compose.yml
 
     - name: Pull image
       shell: |
@@ -94,22 +67,3 @@
 
     - debug:
         var: output
-
-    # - name: Tear down existing services
-    #   community.docker.docker_compose_v2:
-    #     project_src: ~/mlx
-    #     state: absent
-
-    # - name: Create and start services
-    #   community.docker.docker_compose_v2:
-    #     project_src: ~/mlx
-    #   register: output
-
-    # - debug:
-    #     var: output
-
-    # - name: Run `docker-compose up` again
-    #   community.docker.docker_compose_v2:
-    #     project_src: ~/mlx
-    #     build: never
-    #   register: output
