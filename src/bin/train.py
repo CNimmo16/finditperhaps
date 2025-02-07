@@ -10,11 +10,14 @@ import swifter
 import numpy as np
 import wandb
 import sklearn
+import itertools
+import spacy
 
 import models
 import models.doc_projector, models.query_projector, models.doc_embedder, models.query_embedder, models.vectors
 import dataset
-from util import devices, artifacts, mini, constants
+import inference
+from util import devices, artifacts, constants
 
 EPOCHS = 100
 LEARNING_RATE = 0.0002
@@ -25,8 +28,13 @@ EARLY_STOP_AFTER = 3
 torch.manual_seed(16)
 
 def main():
-    wandb.init(project='search', name='search-mini' if mini.is_mini() else 'search')
+    data = pd.read_csv(constants.TRAINING_DATA_PATH)
+
+    print(f"INFO: Running for {len(data)} training rows")
+
+    wandb.init(project='search', name='search')
     wandb.config = {
+        "training_data_size": len(data),
         "learning_rate": LEARNING_RATE,
         "query_hidden_layer_dimensions": models.query_projector.QUERY_HIDDEN_LAYER_DIMENSION,
         "doc_hidden_layer_dimensions": models.doc_projector.DOC_HIDDEN_LAYER_DIMENSION,
@@ -34,16 +42,9 @@ def main():
         "epochs": EPOCHS
     }
 
-    if (mini.is_mini()):
-        print("INFO: Running in mini mode")
-    else:
-        print("INFO: Running in full mode")
-
     device = devices.get_device()
 
     print(f"INFO: Using device: {device.type}")
-
-    data = pd.read_csv(constants.TRAINING_DATA_PATH, nrows=1000 if mini.is_mini() else None)
 
     train, val = sklearn.model_selection.train_test_split(data, test_size=0.2, random_state=16)
 
@@ -70,8 +71,18 @@ def main():
 
     def get_epoch_weight_path(epoch, query_or_doc):
         return os.path.join(constants.DATA_PATH, f"epoch-weights/{query_or_doc}-weights_epoch-{epoch + 1}.generated.pt")
+    
+    val_doc1_samples = val.sample(100, random_state=1)
+    val_doc2_samples = val.sample(100, random_state=2)
+    val_samples = list(zip(val_doc1_samples.iterrows(), val_doc2_samples.iterrows()))
+    val_samples = [(row1[1], row2[1]) for row1, row2 in val_samples]
+
+    print('Initializing spacy for validation')
+    nlp = spacy.load('en_core_web_lg')
+    print('> Done')
 
     for epoch in range(EPOCHS):
+
         query_projector.train()
         doc_projector.train()
 
@@ -96,7 +107,7 @@ def main():
         query_projector.eval()
         doc_projector.eval()
         val_loss = 0.0
-        
+
         with torch.no_grad():
             for batch in val_loader:
                 query_outputs, _ = query_projector(batch['query_embeddings'], batch['query_embedding_lengths'])
@@ -109,7 +120,18 @@ def main():
                 
         val_loss = val_loss / len(val_loader)
 
-        print(f"Epoch {epoch + 1}, train loss: {train_loss}, val loss: {val_loss}")
+        diffs = []
+        for row1, row2 in val_samples:
+            # compare the cosine similarity from the trained model to the similarity returned by a pretrained model from spacy
+            row1_doc_output = inference.get_doc_encoding(doc_projector, row1['doc_text'])
+            row2_doc_output = inference.get_doc_encoding(doc_projector, row2['doc_text'])
+            doc_output_similarity = torch.nn.functional.cosine_similarity(torch.tensor([row1_doc_output]), torch.tensor([row2_doc_output])).item()
+            doc_baseline_similarity = nlp(row1['doc_text']).similarity(nlp(row2['doc_text']))
+            diffs.append(abs(doc_output_similarity - doc_baseline_similarity))
+
+        avg_diff = sum(diffs) / len(diffs)
+
+        print(f"Epoch {epoch + 1}, train loss: {round(train_loss, 6)}, val loss: {round(val_loss, 6)}, difference from baseline model: {round(avg_diff, 4)}")
 
         wandb.log({ 'epoch': epoch + 1, 'train-loss': train_loss, 'val_loss': val_loss })
 
@@ -119,7 +141,6 @@ def main():
             best_doc_state_dict = doc_projector.state_dict()
             val_loss_failed_to_improve_for_epochs = 0
 
-            # if not mini.is_mini():
             Path(os.path.join(constants.DATA_PATH, "epoch-weights")).mkdir(exist_ok=True)
             torch.save(best_query_state_dict, get_epoch_weight_path(epoch, 'query'))
             torch.save(best_doc_state_dict, get_epoch_weight_path(epoch, 'doc'))

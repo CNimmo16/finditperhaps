@@ -33,7 +33,7 @@ apt-get install python3.9
 
 ### Overriding the weights used
 
-By default inference is run using model weights downloaded from wandb (see `src/util/artifacts.py`). Override these by setting env variables, for example to override the weights for the projector during caching you could run `DOC_PROJECTOR_WEIGHTS_PATH=data/doc-weights_epoch-30.generated.pt pdm run cache`
+By default inference is run using model weights downloaded from wandb (see `src/util/artifacts.py`). Override these by setting env variables, for example to override the weights for the projector during caching you could run `DOC_PROJECTOR_WEIGHTS_PATH=data/epoch-weights/doc-weights_epoch-30.generated.pt pdm run cache`
 
 ## Deployment
 
@@ -41,4 +41,4 @@ By default inference is run using model weights downloaded from wandb (see `src/
 2. Open `inventory.ini` and update to reflect the ip and port of the server you want to deploy to
 3. Run `pdm run ansible` to run the `playbook.yml` file which should ssh to the remote server and launch a chroma instance and the server. 
 
-Note that the server will take a long time to startup because it needs to run the document caching logic from `pdm run cache` to insert the document vectors into chroma before it can handle requests. You can check its progress by ssh-ing to the server and running `sudo docker-compose -f /root/mlx/docker-compose.prod.yml logs server`
+Note that the server will take a long time to startup because it needs to run the document caching logic from `pdm run cache` to insert the document vectors into chroma before it can handle requests. You can check its progress by ssh-ing to the server and running `sudo docker compose -f /root/mlx/docker-compose.yml logs server`

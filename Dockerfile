@@ -13,4 +13,4 @@ COPY . /code
 
 EXPOSE 8000
 
-CMD ["python", "src/server.py"]
+CMD PYTHONPATH=src python -m bin.load_to_csv && python src/server.py

@@ -47,48 +47,69 @@
           - docker-compose-plugin
         state: present
 
-    - name: Install venv
-      apt:
-        name:
-          - python3.12-venv
-        state: present
+    # - name: Install venv
+    #   apt:
+    #     name:
+    #       - python3.12-venv
+    #     state: present
 
-    - name: Create venv
-      shell: |
-        python3 -m venv ~/mlx/.venv
+    # - name: Create venv
+    #   shell: |
+    #     python3 -m venv ~/mlx/.venv
 
-    - name: Install docker-compose
-      ansible.builtin.pip:
-        name: docker-compose
-        virtualenv: ~/mlx/.venv
+    # - name: Install docker-compose
+    #   ansible.builtin.pip:
+    #     name: docker-compose
+    #     virtualenv: ~/mlx/.venv
 
-- name: Pull Docker image and compose file
+- name: Pull files
   hosts: cpus
   become: true
   tasks:
     - name: Fetch compose file from repo
       shell: |
-        cd ~/mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/mlx/main/search/docker-compose.prod.yml > docker-compose.yml
+        cd ~/mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/finditperhaps/main/docker-compose.prod.yml > docker-compose.yml
+
+    - name: Pull image
+      shell: |
+        cd ~/mlx && docker pull cameronnimmo/ml-search
+
+    - name: Copy env file to host
+      ansible.builtin.copy:
+        src: .env
+        dest: ~/mlx/.env
 
 - name: Run docker
   hosts: cpus
   become: true
   tasks:
     - name: Tear down existing services
-      community.docker.docker_compose_v2:
-        project_src: ~/mlx
-        state: absent
+      shell: |
+        docker compose -f ~/mlx/docker-compose.yml down
 
     - name: Create and start services
-      community.docker.docker_compose_v2:
-        project_src: ~/mlx
+      shell: |
+        docker compose -f ~/mlx/docker-compose.yml up -d
       register: output
 
     - debug:
         var: output
 
-    - name: Run `docker-compose up` again
-      community.docker.docker_compose_v2:
-        project_src: ~/mlx
-        build: never
-      register: output
+    # - name: Tear down existing services
+    #   community.docker.docker_compose_v2:
+    #     project_src: ~/mlx
+    #     state: absent
+
+    # - name: Create and start services
+    #   community.docker.docker_compose_v2:
+    #     project_src: ~/mlx
+    #   register: output
+
+    # - debug:
+    #     var: output
+
+    # - name: Run `docker-compose up` again
+    #   community.docker.docker_compose_v2:
+    #     project_src: ~/mlx
+    #     build: never
+    #   register: output

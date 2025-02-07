@@ -6,7 +6,7 @@ import swifter
 from util import artifacts, constants, chroma, devices
 import models
 import models.doc_embedder, models.doc_projector, models.vectors
-import dataset
+import inference
 
 device = devices.get_device()
 
@@ -40,33 +40,16 @@ def main():
 
     print('Encoding documents...')
 
-    def get_doc_encoding(row):
-        doc_embeddings = models.doc_embedder.get_embeddings_for_doc(row['doc_text'])
-
-        batch, lengths = dataset.pad_batch_values([doc_embeddings])
-
-        encoded, _ = doc_projector(batch, lengths)
-        encoded_list = encoded.detach().tolist()
-
-        if (len(encoded_list) > 1):
-            raise ValueError(f"Expected 1 encoded vector, got {len(encoded_list)}")
-        
-        encoded_item = encoded_list[0]
-
-        return pd.Series({
-            'doc_ref': row['doc_ref'],
-            'doc_embedding': encoded_item
-        })
-
     collection = chroma.client.create_collection(name="docs", metadata={"hnsw:space": "cosine"})
 
     BATCH_SIZE = 1000
     num_of_batches = len(data) // BATCH_SIZE
     batches = np.array_split(data, num_of_batches)
     for index, batch in enumerate(batches):
-        print(f"Encoding batch {index} of {len(batches)}")
-
-        batch = batch.swifter.apply(get_doc_encoding, axis=1)
+        batch = batch.swifter.progress_bar(enable=True, desc=f"Encoding batch {index} of {len(batches)}").apply(lambda row: pd.Series({
+            'doc_ref': row['doc_ref'],
+            'doc_embedding': inference.get_doc_encoding(doc_projector, row['doc_text'])
+        }), axis=1)
 
         print('Storing encodings for batch...')
 

@@ -15,7 +15,7 @@ def download_from_wandb(ref: str, file: str):
         return env_override
 
     artifact = api.artifact(f"cnimmo16/search/{ref}:latest")
-    dir = artifact.download(os.path.join(dirname, '../artifacts'))
+    dir = artifact.download(os.path.join(dirname, '../../artifacts'))
     return os.path.join(dir, file)
     
 def load_artifact(ref: str, type: str):

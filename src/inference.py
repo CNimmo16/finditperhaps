@@ -4,7 +4,7 @@ import torch
 from util import artifacts, constants, chroma, devices
 import models
 import dataset
-import models.query_embedder, models.query_projector, models.vectors
+import models.query_embedder, models.query_projector, models.doc_projector, models.vectors
 
 MAX_RESULTS = 5
 
@@ -33,6 +33,21 @@ def get_random_query():
     query = sample_queries.sample(1).iloc[0]['query']
 
     return query
+
+def get_doc_encoding(doc_projector: models.doc_projector.Model, doc_text: str):
+    doc_embeddings = models.doc_embedder.get_embeddings_for_doc(doc_text)
+
+    batch, lengths = dataset.pad_batch_values([doc_embeddings])
+
+    encoded, _ = doc_projector(batch, lengths)
+    encoded_list = encoded.detach().tolist()
+
+    if (len(encoded_list) > 1):
+        raise ValueError(f"Expected 1 encoded vector, got {len(encoded_list)}")
+    
+    encoded_item = encoded_list[0]
+
+    return encoded_item
 
 def search(query: str):
     query_projector, docs = load_model_and_docs()

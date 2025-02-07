@@ -48,9 +48,8 @@ class TwoTowerDataset(torch.utils.data.Dataset):
                 self.prepped[chunk_idx] = chunk
                 return chunk
             except:
-                print(f"Preloading data chunk {chunk_idx}...")
                 rows = self.data[chunk_idx * CHUNK_SIZE:(chunk_idx + 1) * CHUNK_SIZE]
-                chunk = rows.swifter.apply(self.__prepare_row, axis=1)
+                chunk = rows.swifter.progress_bar(enable=True, desc=f"Preloading data chunk {chunk_idx}").apply(self.__prepare_row, axis=1)
                 self.prepped[chunk_idx] = chunk
                 if not mini.is_mini():
                     joblib.dump(chunk, chunk_filepath)

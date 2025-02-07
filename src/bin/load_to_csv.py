@@ -3,7 +3,7 @@ import datasets as hf_datasets
 import pandas as pd
 import swifter
 
-from util import constants
+from util import constants, mini
 import models
 import models.doc_embedder, models.query_embedder
 
@@ -26,6 +26,11 @@ def _expand_passages(row) -> hf_datasets.Dataset:
     })
 
 def main():
+    if mini.is_mini():
+        print("INFO: Running in mini mode")
+    else:
+        print("INFO: Running in full mode")
+
     print('Loading dataset...')
 
     splits = hf_datasets.load_dataset("microsoft/ms_marco", "v1.1")
@@ -37,9 +42,11 @@ def main():
         
     marco = pd.DataFrame(all_data)
 
-    print('Expanding passages...')
+    if mini.is_mini():
+        print('INFO: Running in mini mode, only using first 1500 rows...')
+        marco = marco[:1500]
 
-    marco = pd.concat(marco.swifter.apply(_expand_passages, axis=1).tolist(), ignore_index=True)
+    marco = pd.concat(marco.swifter.progress_bar(enable=True, desc="Expanding passages...").apply(_expand_passages, axis=1).tolist(), ignore_index=True)
 
     marco = marco[marco['is_selected'] == 1]
 
@@ -62,3 +69,6 @@ def main():
     marco.to_csv(constants.TRAINING_DATA_PATH, index=False)
 
     print('Done!')
+
+if __name__ == "__main__":
+    main()
