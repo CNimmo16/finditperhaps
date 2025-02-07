@@ -1,17 +1,11 @@
 import os
 from pathlib import Path
 import pandas as pd
-import sklearn.model_selection
-import sklearn.preprocessing
 import torch
 import tqdm
 from typing import TypedDict
 import swifter
-import numpy as np
 import wandb
-import sklearn
-import itertools
-import spacy
 
 import models
 import models.doc_projector, models.query_projector, models.doc_embedder, models.query_embedder, models.vectors
@@ -45,8 +39,12 @@ def main():
     device = devices.get_device()
 
     print(f"INFO: Using device: {device.type}")
+    
+    data = data.sample(frac=1, random_state=16).reset_index(drop=True)
 
-    train, val = sklearn.model_selection.train_test_split(data, test_size=0.2, random_state=16)
+    train_size = int(0.8 * len(data))
+    train = data[:train_size]
+    val = data[train_size:]
 
     train.reset_index(drop=True, inplace=True)
     val.reset_index(drop=True, inplace=True)
@@ -72,15 +70,6 @@ def main():
     def get_epoch_weight_path(epoch, query_or_doc):
         return os.path.join(constants.DATA_PATH, f"epoch-weights/{query_or_doc}-weights_epoch-{epoch + 1}.generated.pt")
     
-    val_doc1_samples = val.sample(100, random_state=1)
-    val_doc2_samples = val.sample(100, random_state=2)
-    val_samples = list(zip(val_doc1_samples.iterrows(), val_doc2_samples.iterrows()))
-    val_samples = [(row1[1], row2[1]) for row1, row2 in val_samples]
-
-    print('Initializing spacy for validation')
-    nlp = spacy.load('en_core_web_lg')
-    print('> Done')
-
     for epoch in range(EPOCHS):
 
         query_projector.train()
@@ -120,18 +109,7 @@ def main():
                 
         val_loss = val_loss / len(val_loader)
 
-        diffs = []
-        for row1, row2 in val_samples:
-            # compare the cosine similarity from the trained model to the similarity returned by a pretrained model from spacy
-            row1_doc_output = inference.get_doc_encoding(doc_projector, row1['doc_text'])
-            row2_doc_output = inference.get_doc_encoding(doc_projector, row2['doc_text'])
-            doc_output_similarity = torch.nn.functional.cosine_similarity(torch.tensor([row1_doc_output]), torch.tensor([row2_doc_output])).item()
-            doc_baseline_similarity = nlp(row1['doc_text']).similarity(nlp(row2['doc_text']))
-            diffs.append(abs(doc_output_similarity - doc_baseline_similarity))
-
-        avg_diff = sum(diffs) / len(diffs)
-
-        print(f"Epoch {epoch + 1}, train loss: {round(train_loss, 6)}, val loss: {round(val_loss, 6)}, difference from baseline model: {round(avg_diff, 4)}")
+        print(f"Epoch {epoch + 1}, train loss: {round(train_loss, 6)}, val loss: {round(val_loss, 6)}")
 
         wandb.log({ 'epoch': epoch + 1, 'train-loss': train_loss, 'val_loss': val_loss })
 
