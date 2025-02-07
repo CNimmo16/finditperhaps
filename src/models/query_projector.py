@@ -32,12 +32,7 @@ class Model(torch.nn.Module):
         packed_output, (h_n, c_n) = self.rnn(packed_x)
 
         final_layer_output = h_n.squeeze(0)
-        
-        # Unpack the output back to padded
-        # output, _ = torch.nn.utils.rnn.pad_packed_sequence(packed_output, batch_first=True)
 
         projected = self.project(final_layer_output)
-
-        # mean = torch.mean(projected, dim=1)
 
         return projected, (h_n, c_n)
