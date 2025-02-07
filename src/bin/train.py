@@ -10,7 +10,6 @@ import wandb
 import models
 import models.doc_projector, models.query_projector, models.doc_embedder, models.query_embedder, models.vectors
 import dataset
-import inference
 from util import devices, artifacts, constants
 
 EPOCHS = 100
