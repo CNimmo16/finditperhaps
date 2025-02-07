@@ -11,6 +11,4 @@ RUN pip install --no-cache-dir pysqlite3-binary
 
 COPY . /code
 
-EXPOSE 8000
-
-CMD PYTHONPATH=src python -m bin.load_to_csv && python src/server.py
+CMD ["/bin/sh", "/code/start.sh"]
