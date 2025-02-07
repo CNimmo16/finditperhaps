@@ -39,13 +39,20 @@
   hosts: cpus
   become: true
   tasks:
+    - name: Make project directory
+      shell: |
+        cd ~
+        mkdir -p mlx
+
     - name: Fetch compose file from repo
       shell: |
-        cd ~ && mkdir mlx && curl -0 https://raw.githubusercontent.com/cnimmo16/finditperhaps/main/docker-compose.prod.yml > docker-compose.yml
+        cd ~/mlx
+        curl -0 https://raw.githubusercontent.com/cnimmo16/finditperhaps/main/docker-compose.prod.yml > docker-compose.yml
 
     - name: Pull image
       shell: |
-        cd ~/mlx && docker pull cameronnimmo/ml-search
+        cd ~/mlx
+        docker pull cameronnimmo/ml-search
 
     - name: Copy env file to host
       ansible.builtin.copy:
