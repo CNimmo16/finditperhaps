@@ -22,7 +22,7 @@ apt-get install python3.9
 
 1. Run `./ssh.sh`, providing ip and port when prompted to open vscode on the GPU remotely
 2. Follow steps from [setup](#setup) to install PDM and python on the GPU
-3. Run `pdm run load` to preprocess the dataset into a csv
+3. Run `FULLRUN=1 pdm run load` to preprocess the dataset into a csv
 4. Run `FULLRUN=1 pdm run train` to train the model in full mode with all the data
 
 ## Running inference locally

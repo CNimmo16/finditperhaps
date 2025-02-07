@@ -7,3 +7,4 @@ requirements.txt
 .pdm-python
 */**/*.egg-info
 .python-version
+chroma_data/
