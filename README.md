@@ -1,4 +1,6 @@
-# MLX course
+# Finditperhaps
+
+Document search and retrieval with deep learning (part of ML institute programme)
 
 ## Setup
 
